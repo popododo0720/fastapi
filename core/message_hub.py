@@ -9,7 +9,7 @@ class MessageHub:
 
     def _initialize_queues(self):
         """program queue init"""
-        program_names = ["program1", "program2", "program3"]
+        program_names = ["program1", "program2", "program3", "program4"]
         for name in program_names:
             self.queues[name] = queue.Queue()
 

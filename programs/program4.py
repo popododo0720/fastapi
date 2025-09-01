@@ -30,11 +30,39 @@ class HelloWorldProgram:
             
         except ImportError as e:
             print(f"❌ C++ 모듈 로드 실패: {e}")
-            print("컴파일이 필요합니다:")
-            print("pip install pybind11")
-            print("또는 수동 컴파일:")
-            print("g++ -O3 -Wall -shared -std=c++20 -fPIC `python3 -m pybind11 --includes` programs/program4/hello.cc -o programs/program4/hello_cpp`python3-config --extension-suffix`")
-            self.hello_module = None
+            print("🔧 자동으로 빌드를 시도합니다...")
+            self._build_cpp_module()
+            
+            # 빌드 후 다시 시도
+            try:
+                import hello_cpp
+                self.hello_module = hello_cpp
+                self.hello_world_obj = hello_cpp.HelloWorld()
+                print("✅ 빌드 후 C++ 모듈 로드 성공")
+            except ImportError:
+                print("❌ 빌드 후에도 모듈 로드 실패")
+                self.hello_module = None
+    
+    def _build_cpp_module(self):
+        """C++ 모듈 자동 빌드"""
+        import subprocess
+        
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        module_dir = os.path.join(current_dir, "program4")
+        
+        try:
+            # setup.py를 사용해서 빌드
+            result = subprocess.run([
+                sys.executable, "setup.py", "build_ext", "--inplace"
+            ], cwd=module_dir, capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                print("✅ C++ 모듈 빌드 성공")
+            else:
+                print(f"❌ 빌드 실패: {result.stderr}")
+                
+        except Exception as e:
+            print(f"❌ 빌드 중 오류 발생: {e}")
     
     def start(self):
         """프로그램 시작"""

@@ -7,5 +7,6 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.116.1",
     "pybind11>=3.0.1",
+    "setuptools>=80.9.0",
     "uvicorn>=0.35.0",
 ]
